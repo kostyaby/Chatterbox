@@ -3,6 +3,7 @@ package com.chatterbox.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,34 +28,40 @@ public class UserServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        Base.open(DB_DRIVER, DB_NAME, DB_USERNAME, DB_PASSWORD);
     }
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
+        Base.open(DB_DRIVER, DB_NAME, DB_USERNAME, DB_PASSWORD);
         try {
-            response.setContentType("text/html");
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
             PrintWriter out = response.getWriter();
-            Enumeration<String> parameterNames = request.getParameterNames();
-            while (parameterNames.hasMoreElements()) {
-                String paramName = parameterNames.nextElement();
-                out.write(paramName);
-                out.write("n");
-                String[] paramValues = request.getParameterValues(paramName);
-                for (String paramValue : paramValues) {
-                    out.write("t" + paramValue);
-                    out.write("n");
+            String name = request.getParameter("name");
+            String password = request.getParameter("password");
+            List<User> users = User.where("name=?", name);
+            if (users.size() != 1) {
+                JSONObject jsonResponse = new JSONObject();
+                jsonResponse.put("user_id", -1);
+                out.print(jsonResponse);
+            } else {
+                User user = users.get(0);
+                JSONObject jsonResponse = new JSONObject();
+                if (user.get("password").equals(password)) {
+                    jsonResponse.put("user_id", user.get("id"));
+                } else {
+                    jsonResponse.put("user_id", -1);
                 }
-
+                out.print(jsonResponse);
             }
             out.flush();
             out.close();
         } catch(IOException | JSONException e) {
             e.printStackTrace();
         }
+        Base.close();
     }
     @Override
     public void destroy() {
-        Base.close();
         super.destroy();
     }
 }

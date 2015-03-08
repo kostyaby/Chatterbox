@@ -47,7 +47,10 @@
 
 
 .fixed-height {
-    padding: 5px 5px;
+    padding-bottom: 8px;
+    padding-top: 7px;
+    padding-left: 5px;
+    padding-right: 5px;
     font-size: 15px;
     line-height: normal;
 }

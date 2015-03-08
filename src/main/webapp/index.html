@@ -15,6 +15,10 @@
 
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <!-- CryptoJS -->
+        <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+        <!-- MomentJS -->
+        <script src="resources/js/moments.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="resources/js/bootstrap.min.js"></script>
         <!-- Custom scripts for this template -->
@@ -23,6 +27,34 @@
     </head>
     <body onload="run();">
         <div id="chat-area">
+            <div class="row">
+                <div class="col-md-3 col-md-offset-2">
+                    <div class="inner">
+                        <input id="username" type="text" class="form-control" autocomplete="off"
+                               placeholder="Имя пользователя">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="inner">
+                        <input id="password" type="password" class="form-control" autocomplete="off"
+                               placeholder="Пароль">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="inner">
+                        <button id="enter-button" type="button" class="btn btn-primary btn-lg
+                            btn-block fixed-height">Войти</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="inner">
+                        <div id="user-info-box">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <div class="inner">

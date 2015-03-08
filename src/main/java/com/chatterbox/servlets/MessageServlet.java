@@ -72,8 +72,9 @@ public class MessageServlet extends HttpServlet {
 
                 Message message = new Message();
 
+                int userId = Integer.parseInt(request.getParameter("user_id"));
                 String text = request.getParameter("message");
-                message.set("user_id", 1);
+                message.set("user_id", userId);
                 message.set("content", text);
                 message.saveIt();
 
