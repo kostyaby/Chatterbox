@@ -149,15 +149,18 @@ function onEnterButton(){
 }
 
 function onRemoveButton(message_id) {
-    var posting = $.post("/Chat/messages", {"type": "remove_message", "message_id": message_id});
-    posting.done( function( data ) {
-        refreshMessageArea();
-        // scrollToTheBottom();
-        updateStatusButton(0);
-    });
-    posting.fail( function( data ) {
-        updateStatusButton(1);
-    });
+    var response = confirm("Вы действительно хотите удалить свое сообщение?");
+    if (response) {
+        var posting = $.post("/Chat/messages", {"type": "remove_message", "message_id": message_id});
+        posting.done( function( data ) {
+            refreshMessageArea();
+            // scrollToTheBottom();
+            updateStatusButton(0);
+        });
+        posting.fail( function( data ) {
+            updateStatusButton(1);
+        });
+    }
 }
 
 function onEditButton(message_id) {
