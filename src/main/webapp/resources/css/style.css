@@ -10,9 +10,13 @@
 
 .message {
     padding: 10px;
-    border: 1px solid #ddd;
     margin: 5px;
+    border: 1px solid #ddd;
     border-radius: 10px;
+    font-size: 14px;
+}
+
+.message-button {
     font-size: 14px;
 }
 

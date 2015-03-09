@@ -1,84 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>ChatterBox</title>
+<head>
 
-        <!-- Bootstrap -->
-        <link href="resources/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ChatterBox</title>
 
-        <!-- Custom styles for this template -->
-        <link href="resources/css/style.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="resources/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <!-- CryptoJS -->
-        <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
-        <!-- MomentJS -->
-        <script src="resources/js/moments.js"></script>
-        <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="resources/js/bootstrap.min.js"></script>
-        <!-- Custom scripts for this template -->
-        <script src="resources/js/chat.js"></script>
+    <!-- Custom styles for this template -->
+    <link href="resources/css/style.css" rel="stylesheet">
 
-    </head>
-    <body onload="run();">
-        <div id="chat-area" class="container">
-            <div class="row">
-                <div class="col-md-3 col-md-offset-2">
-                    <div class="inner">
-                        <input id="username" type="text" class="form-control" autocomplete="off"
-                               placeholder="Имя пользователя">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="inner">
-                        <input id="password" type="password" class="form-control" autocomplete="off"
-                               placeholder="Пароль">
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="inner">
-                        <button id="enter-button" type="button" class="btn btn-primary btn-lg
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- CryptoJS -->
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+    <!-- MomentJS -->
+    <script src="resources/js/moments.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="resources/js/bootstrap.min.js"></script>
+    <!-- Custom scripts for this template -->
+    <script src="resources/js/chat.js"></script>
+
+</head>
+<body onload="run();">
+<div id="chat-area" class="container">
+    <div class="row">
+        <div class="col-md-3 col-md-offset-2">
+            <div class="inner">
+                <input id="username" type="text" class="form-control" autocomplete="off"
+                       placeholder="Имя пользователя">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="inner">
+                <input id="password" type="password" class="form-control" autocomplete="off"
+                       placeholder="Пароль">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="inner">
+                <button id="enter-button" type="button" class="btn btn-primary btn-lg
                             btn-block fixed-height">Войти</button>
-                    </div>
-                </div>
             </div>
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="inner">
-                        <div id="user-info-box">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="inner">
-                        <div id="message-area">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 col-md-offset-2">
-                    <div class="inner">
-                        <input id="message-text" type="text" class="form-control" autocomplete="off"
-                               placeholder="Введите текст сообщения">
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="inner">
-                        <button id="status-button" type="button" class="btn btn-lg
-                            btn-block fixed-height" disabled></button>
-                        <button id="add-button" type="button" class="btn btn-primary btn-lg
-                            btn-block fixed-height">Написать сообщение!</button>
-                    </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="inner">
+                <div id="user-info-box">
                 </div>
             </div>
         </div>
-    </body>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="inner">
+                <div id="message-area">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-2">
+            <div class="inner">
+                <input id="message-text" type="text" class="form-control" autocomplete="off"
+                       placeholder="Введите текст сообщения">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="inner">
+                <button id="status-button" type="button" class="btn btn-lg
+                            btn-block fixed-height" disabled></button>
+                <button id="add-button" type="button" class="btn btn-primary btn-lg
+                            btn-block fixed-height">Написать сообщение!</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
 </html>

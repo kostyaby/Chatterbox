@@ -41,9 +41,14 @@ function delegateEvent(evtObj) {
     if(evtObj.type === 'click' && evtObj.target.id === 'enter-button'){
         onEnterButton(evtObj);
     }
-    alert(evtObj.target.id);
-    if(evtObj.type === 'click' && evtObj.target.id.substring(0, 13) === 'remove-button'){
+    if(evtObj.type === 'click' && evtObj.target.id === 'name-edit-button'){
+        onNameEditButton(evtObj);
+    }
+    if(evtObj.type === 'click' && evtObj.target.id.substring(0, 14) == 'remove-button-'){
         onRemoveButton(evtObj.target.id.substring(14), evtObj);
+    }
+    if(evtObj.type === 'click' && evtObj.target.id.substring(0, 12) == 'edit-button-'){
+        onEditButton(evtObj.target.id.substring(12), evtObj);
     }
 }
 
@@ -51,9 +56,23 @@ function checkAuthentication() {
     if (sessionStorage.getItem("user_id") != null) {
         // user
         var user_id = sessionStorage.getItem("user_id");
+        var user_name = sessionStorage.getItem("user_name");
 
         var user_info_box = document.getElementById("user-info-box");
-        user_info_box.innerHTML = "Вы успешно прошли аутентификацию. Поздравляю!";
+        user_info_box.innerHTML = "Добро пожаловать, " + user_name;
+
+        var buttonItem = document.createElement('button');
+        buttonItem.setAttribute('type', 'button');
+        buttonItem.setAttribute('id', "name-edit-button");
+        buttonItem.classList.add("btn");
+        buttonItem.classList.add("btn-xs");
+        buttonItem.classList.add("btn-default");
+        buttonItem.classList.add("pull-right");
+        buttonItem.classList.add("message-button");
+        buttonItem.innerHTML = "Edit";
+
+        user_info_box.appendChild(buttonItem);
+
         document.getElementById("username").disabled = true;
         document.getElementById("password").disabled = true;
         document.getElementById("enter-button").disabled = false;
@@ -95,7 +114,9 @@ function onEnterButton(){
         var passhash = CryptoJS.MD5(document.getElementById('password').value);
 
         if (name.length > 0 && password.length > 0) {
-            var posting = $.post("/Chat/users", {"name": name, "password": passhash.toString()});
+            var posting = $.post("/Chat/users", {"type": "authentication",
+                "name": name,
+                "password": passhash.toString()});
             posting.done(function (data) {
                 var user_id = data.user_id;
                 if (user_id == -1) {
@@ -105,6 +126,8 @@ function onEnterButton(){
                     document.getElementById('username').value = "";
                     document.getElementById('password').value = "";
                     sessionStorage.setItem("user_id", user_id);
+                    sessionStorage.setItem("user_name", name);
+
                 }
                 checkAuthentication();
             });
@@ -126,7 +149,66 @@ function onEnterButton(){
 }
 
 function onRemoveButton(message_id) {
-    alert(message_id);
+    var posting = $.post("/Chat/messages", {"type": "remove_message", "message_id": message_id});
+    posting.done( function( data ) {
+        refreshMessageArea();
+        // scrollToTheBottom();
+        updateStatusButton(0);
+    });
+    posting.fail( function( data ) {
+        updateStatusButton(1);
+    });
+}
+
+function onEditButton(message_id) {
+    var messageBox = document.getElementById("message-" + message_id);
+    var contentItem = messageBox.getElementsByClassName("content")[0]
+        .getElementsByTagName("i")[0];
+    var newText = prompt("Введите текст сообщения", contentItem.innerHTML);
+    if (newText.length > 0) {
+        var response = confirm("Вы действительно хотите изменить свое сообщение?");
+        if (response) {
+            var posting = $.post("/Chat/messages", {"type": "update_message", "message_id": message_id,
+                "message": newText});
+            posting.done( function( data ) {
+                refreshMessageArea();
+                // scrollToTheBottom();
+                updateStatusButton(0);
+            });
+            posting.fail( function( data ) {
+                updateStatusButton(1);
+            });
+        }
+    } else {
+        alert("Вы не можете оставить сообщение пустым!");
+    }
+}
+
+function onNameEditButton() {
+    var newName = prompt("Введите текст сообщения", sessionStorage.getItem("user_name"));
+    if (newName.length > 0) {
+        var response = confirm("Вы действительно хотите изменить имя своего пользователя?");
+        if (response) {
+            var posting = $.post("/Chat/users", {"type": "change_name",
+                "id": sessionStorage.getItem("user_id"),
+                "name": newName});
+            posting.done( function( data ) {
+                if (data.verdict == "ok") {
+                    sessionStorage.setItem("user_name", newName);
+                } else {
+                    alert("Пользователь с таким именем уже существует! Выберите другое.");
+                }
+                refreshMessageArea();
+                // scrollToTheBottom();
+                updateStatusButton(0);
+            });
+            posting.fail( function( data ) {
+                updateStatusButton(1);
+            });
+        }
+    } else {
+        alert("Вы не можете оставить имя пользователя пустым!");
+    }
 }
 
 function refreshMessageArea(){
@@ -146,15 +228,17 @@ function refreshMessageArea(){
                 lastUpdate = data[i].created_at;
             }
             if (data[i].event_type == "add_message") {
+                var user_id_session = sessionStorage.getItem("user_id");
+                var user_id_message = message.user_id;
                 addMessage(message.id, author.bold() + "<" + processDate(date) + ">: "
-                    + content);
+                + content.italics(), user_id_message == user_id_session);
             }
             if (data[i].event_type == "update_message") {
                 updateMessage(message.id, author.bold() + "<" + processDate(date) + ">: "
-                    + content);
+                + content.italics());
             }
-            if (data[i].event_type == "delete_message") {
-                deleteMessage(message.id);
+            if (data[i].event_type == "remove_message") {
+                removeMessage(message.id);
             }
         }
         updateStatusButton(0);
@@ -223,8 +307,8 @@ function onAddButton(){
     document.getElementById('message-text').value = "";
 }
 
-function addMessage(message_id, content) {
-    var message = createMessage(message_id, content);
+function addMessage(message_id, content, is_author) {
+    var message = createMessage(message_id, content, is_author);
     var message_area = document.getElementById('message-area');
 
     message_area.appendChild(message);
@@ -233,41 +317,58 @@ function addMessage(message_id, content) {
 function updateMessage(message_id, content) {
     var message = document.getElementById("message-" + message_id.toString());
 
-    message.innerHTML = content;
+    message.getElementsByTagName("u")[0].innerHTML = content;
 }
 
-function deleteMessage(message_id) {
+function removeMessage(message_id) {
     var message = document.getElementById("message-" + message_id.toString());
+    while (message.firstChild) {
+        message.removeChild(message.firstChild);
+    }
     message.parentNode.removeChild(message);
 }
 
-function createIconSpan(glyphicon_name) {
-    var spanItem = document.createElement('span');
-    spanItem.classList.add('glyphicon');
-    spanItem.classList.add('glyphicon-' + glyphicon_name)
-    spanItem.setAttribute('aria-hidden', 'true');
-    return spanItem;
-}
-
-function createIconButton(message_id, glyphicon_name) {
+function createButton(message_id, name) {
     var buttonItem = document.createElement('button');
     buttonItem.setAttribute('type', 'button');
-    buttonItem.setAttribute('id', glyphicon_name + "-button-" + message_id.toString());
-    alert(glyphicon_name + "-button-" + message_id.toString());
+    buttonItem.setAttribute('id', name + "-button-" + message_id.toString());
     buttonItem.classList.add("btn");
     buttonItem.classList.add("btn-xs");
     buttonItem.classList.add("btn-default");
-    // buttonItem.classList.add("pull-right");
-    buttonItem.classList.add("icon-padding");
-    buttonItem.appendChild(createIconSpan(glyphicon_name));
+    buttonItem.classList.add("pull-right");
+    buttonItem.classList.add("message-button");
+    buttonItem.innerHTML = name;
     return buttonItem;
 }
 
-function createMessage(message_id, content){
+function createMessageBox(content) {
     var divItem = document.createElement('div');
+    //divItem.classList.add("col-md-8");
     divItem.classList.add('message');
-    divItem.setAttribute("id", "message-" + message_id.toString());
-    var buttonItem = createIconButton(message_id, 'remove');
-    divItem.appendChild(buttonItem);
+    divItem.classList.add("message-content");
+    divItem.innerHTML = content;
     return divItem;
 }
+
+function createMessage(message_id, content, is_author){
+    var divItem = document.createElement('div');
+    divItem.setAttribute("id", "message-" + message_id.toString());
+    divItem.classList.add('message');
+    divItem.classList.add("message-content");
+
+    var contentItem = document.createElement('u');
+    contentItem.innerHTML = content;
+
+    divItem.appendChild(contentItem);
+
+    if (is_author) {
+        var buttonEdit = createButton(message_id, 'edit');
+        var buttonRemove = createButton(message_id, 'remove');
+
+        divItem.appendChild(buttonRemove);
+        divItem.appendChild(buttonEdit);
+    }
+
+    return divItem;
+}
+

@@ -3,8 +3,6 @@ package com.chatterbox.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -88,7 +86,38 @@ public class MessageServlet extends HttpServlet {
                 messageEvent.saveIt();
 
                 JSONObject jsonResponse = new JSONObject();
-                jsonResponse.put("timestamp", message.get("created_at"));
+                jsonResponse.put("verdict", "ok");
+                out.print(jsonResponse);
+            }
+            if ("update_message".equals(parameter)) {
+
+                int messageId = Integer.parseInt(request.getParameter("message_id"));
+                String text = request.getParameter("message");
+
+                Message message = Message.findFirst("id = ?", messageId);
+                message.set("content", text);
+                message.saveIt();
+
+                MessageEvent messageEvent = new MessageEvent();
+                messageEvent.set("message_id", messageId);
+                messageEvent.set("event_type", "update_message");
+                messageEvent.saveIt();
+
+                JSONObject jsonResponse = new JSONObject();
+                jsonResponse.put("verdict", "ok");
+                out.print(jsonResponse);
+            }
+            if ("remove_message".equals(parameter)) {
+
+                int messageId = Integer.parseInt(request.getParameter("message_id"));
+
+                MessageEvent messageEvent = new MessageEvent();
+                messageEvent.set("message_id", messageId);
+                messageEvent.set("event_type", "remove_message");
+                messageEvent.saveIt();
+
+                JSONObject jsonResponse = new JSONObject();
+                jsonResponse.put("verdict", "ok");
                 out.print(jsonResponse);
             }
             out.flush();

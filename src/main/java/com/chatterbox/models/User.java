@@ -6,7 +6,7 @@ public class User extends Model {
 
     static {
         validatePresenceOf("name", "password", "email");
-        validateEmailOf("email");
+//        validateEmailOf("email");
     }
 
 }
