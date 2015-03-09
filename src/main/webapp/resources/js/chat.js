@@ -143,6 +143,7 @@ function onEnterButton(){
         var response = confirm("Вы действительно хотите выйти из своей учетной записи?");
         if (response) {
             sessionStorage.removeItem("user_id");
+            sessionStorage.removeItem("user_name");
             checkAuthentication();
         }
     }
