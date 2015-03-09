@@ -18,18 +18,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MessageServlet extends HttpServlet {
-
-    final private String DB_DRIVER = "org.postgresql.Driver";
-    final private String DB_NAME = "jdbc:postgresql://localhost:5432/chatterbox";
-    final private String DB_USERNAME = "kostya_by";
-    final private String DB_PASSWORD = "";
-    @Override
-    public void init() throws ServletException {
-        super.init();
-    }
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        Base.open(DB_DRIVER, DB_NAME, DB_USERNAME, DB_PASSWORD);
+        Base.open(ServletConstants.DB_DRIVER,
+            ServletConstants.DB_NAME,
+            ServletConstants.DB_USERNAME,
+            ServletConstants.DB_PASSWORD);
         try {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -64,7 +58,10 @@ public class MessageServlet extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
-        Base.open(DB_DRIVER, DB_NAME, DB_USERNAME, DB_PASSWORD);
+        Base.open(ServletConstants.DB_DRIVER,
+            ServletConstants.DB_NAME,
+            ServletConstants.DB_USERNAME,
+            ServletConstants.DB_PASSWORD);
         try {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -126,9 +123,5 @@ public class MessageServlet extends HttpServlet {
             e.printStackTrace();
         }
         Base.close();
-    }
-    @Override
-    public void destroy() {
-        super.destroy();
     }
 }
