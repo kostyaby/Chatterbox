@@ -8,27 +8,6 @@
     border: 1px solid #ddd;
 }
 
-.avatar {
-    height: 30px;
-    width:  30px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.input-field {
-    height: 30px;
-    width: 120px;
-}
-
-.static-text {
-    padding: 15px;
-}
-
-.author-name {
-    padding: 0px;
-    width: 400px;
-}
-
 .message {
     padding: 10px;
     border: 1px solid #ddd;
@@ -37,15 +16,6 @@
     font-size: 14px;
 }
 
-.your-message {
-    background-color: #98FB98;
-}
-
-.opponent-message {
-    background-color: #87CEFA;
-}
-
-
 .fixed-height {
     padding-bottom: 8px;
     padding-top: 7px;
@@ -53,10 +23,6 @@
     padding-right: 5px;
     font-size: 15px;
     line-height: normal;
-}
-
-.icon-padding {
-    padding-left: 5px;
 }
 
 #message-area {

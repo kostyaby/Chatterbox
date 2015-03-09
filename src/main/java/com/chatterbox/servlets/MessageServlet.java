@@ -3,6 +3,8 @@ package com.chatterbox.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.chatterbox.models.Message;
+import com.chatterbox.models.MessageEvent;
 import org.javalite.activejdbc.Base;
 import org.javalite.activejdbc.Model;
 import org.json.JSONArray;
@@ -46,10 +49,11 @@ public class MessageServlet extends HttpServlet {
             if ("since".equals(parameter)) {
                 String timestamp = request.getParameter("timestamp");
                 JSONArray array = new JSONArray();
-                List<Message> messages = Message.where("created_at > ?::timestamp", timestamp).orderBy("id");
-                for (Model model : messages) {
-                    Message message = (Message) model;
-                    array.put(message.toJson());
+                List<MessageEvent> messageEvents = MessageEvent.where(
+                    "created_at > ?::timestamp", timestamp).orderBy("id");
+                for (Model model : messageEvents) {
+                    MessageEvent messageEvent = (MessageEvent) model;
+                    array.put(messageEvent.toJson());
                 }
                 out.print(array);
             }
@@ -70,13 +74,18 @@ public class MessageServlet extends HttpServlet {
             String parameter = request.getParameter("type");
             if ("new_message".equals(parameter)) {
 
-                Message message = new Message();
-
                 int userId = Integer.parseInt(request.getParameter("user_id"));
                 String text = request.getParameter("message");
+
+                Message message = new Message();
                 message.set("user_id", userId);
                 message.set("content", text);
                 message.saveIt();
+
+                MessageEvent messageEvent = new MessageEvent();
+                messageEvent.set("message_id", message.get("id"));
+                messageEvent.set("event_type", "add_message");
+                messageEvent.saveIt();
 
                 JSONObject jsonResponse = new JSONObject();
                 jsonResponse.put("timestamp", message.get("created_at"));

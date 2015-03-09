@@ -41,6 +41,10 @@ function delegateEvent(evtObj) {
     if(evtObj.type === 'click' && evtObj.target.id === 'enter-button'){
         onEnterButton(evtObj);
     }
+    alert(evtObj.target.id);
+    if(evtObj.type === 'click' && evtObj.target.id.substring(0, 13) === 'remove-button'){
+        onRemoveButton(evtObj.target.id.substring(14), evtObj);
+    }
 }
 
 function checkAuthentication() {
@@ -121,19 +125,37 @@ function onEnterButton(){
     }
 }
 
+function onRemoveButton(message_id) {
+    alert(message_id);
+}
 
 function refreshMessageArea(){
-    var posting = $.get( "/Chat/messages", { "type": "since", "timestamp": lastUpdate } );
+    var posting = $.ajax({
+        type: "get",
+        url: "/Chat/messages",
+        data: {"type": "since", "timestamp": lastUpdate}
+    });
 
     posting.done( function( data ) {
         for (i = 0; i < data.length; i++) {
-            var author = data[i].user_name;
-            var content = data[i].content;
-            var date = data[i].created_at;
+            var message = data[i].message;
+            var author = message.user_name;
+            var content = message.content;
+            var date = message.created_at;
             if (lastUpdate.localeCompare(data[i].created_at) < 0) {
                 lastUpdate = data[i].created_at;
             }
-            addMessage(author.bold() + "<" + processDate(date) + ">: " +  content);
+            if (data[i].event_type == "add_message") {
+                addMessage(message.id, author.bold() + "<" + processDate(date) + ">: "
+                    + content);
+            }
+            if (data[i].event_type == "update_message") {
+                updateMessage(message.id, author.bold() + "<" + processDate(date) + ">: "
+                    + content);
+            }
+            if (data[i].event_type == "delete_message") {
+                deleteMessage(message.id);
+            }
         }
         updateStatusButton(0);
     });
@@ -201,17 +223,51 @@ function onAddButton(){
     document.getElementById('message-text').value = "";
 }
 
-function addMessage(content) {
-    var message = createMessage(content);
+function addMessage(message_id, content) {
+    var message = createMessage(message_id, content);
     var message_area = document.getElementById('message-area');
 
     message_area.appendChild(message);
 }
 
-function createMessage(content){
+function updateMessage(message_id, content) {
+    var message = document.getElementById("message-" + message_id.toString());
+
+    message.innerHTML = content;
+}
+
+function deleteMessage(message_id) {
+    var message = document.getElementById("message-" + message_id.toString());
+    message.parentNode.removeChild(message);
+}
+
+function createIconSpan(glyphicon_name) {
+    var spanItem = document.createElement('span');
+    spanItem.classList.add('glyphicon');
+    spanItem.classList.add('glyphicon-' + glyphicon_name)
+    spanItem.setAttribute('aria-hidden', 'true');
+    return spanItem;
+}
+
+function createIconButton(message_id, glyphicon_name) {
+    var buttonItem = document.createElement('button');
+    buttonItem.setAttribute('type', 'button');
+    buttonItem.setAttribute('id', glyphicon_name + "-button-" + message_id.toString());
+    alert(glyphicon_name + "-button-" + message_id.toString());
+    buttonItem.classList.add("btn");
+    buttonItem.classList.add("btn-xs");
+    buttonItem.classList.add("btn-default");
+    // buttonItem.classList.add("pull-right");
+    buttonItem.classList.add("icon-padding");
+    buttonItem.appendChild(createIconSpan(glyphicon_name));
+    return buttonItem;
+}
+
+function createMessage(message_id, content){
     var divItem = document.createElement('div');
     divItem.classList.add('message');
-    // divItem.appendChild(document.createTextNode(content));
-    divItem.innerHTML = content;
+    divItem.setAttribute("id", "message-" + message_id.toString());
+    var buttonItem = createIconButton(message_id, 'remove');
+    divItem.appendChild(buttonItem);
     return divItem;
 }

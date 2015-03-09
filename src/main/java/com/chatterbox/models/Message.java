@@ -10,14 +10,14 @@ public class Message extends Model {
     }
 
     public JSONObject toJson() {
-        JSONObject result = new JSONObject();
-        result.put("id", get("id"));
-        result.put("user_id", get("user_id"));
-        result.put("user_name", User.findFirst("id = ?", get("user_id")).get("name"));
-        result.put("content", get("content"));
-        result.put("created_at", get("created_at"));
-        result.put("updated_at", get("updated_at"));
-        return result;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", get("id"));
+        jsonObject.put("user_id", get("user_id"));
+        jsonObject.put("user_name", User.findFirst("id = ?", get("user_id")).get("name"));
+        jsonObject.put("content", get("content"));
+        jsonObject.put("created_at", get("created_at"));
+        jsonObject.put("updated_at", get("updated_at"));
+        return jsonObject;
     }
 
 }
