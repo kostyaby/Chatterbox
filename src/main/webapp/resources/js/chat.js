@@ -166,7 +166,7 @@ function onRemoveButton(message_id) {
 
 function onEditButton(message_id) {
     var messageBox = document.getElementById("message-" + message_id);
-    var contentItem = messageBox.getElementsByClassName("content")[0]
+    var contentItem = messageBox.getElementsByTagName("u")[0]
         .getElementsByTagName("i")[0];
     var newText = prompt("Введите текст сообщения", contentItem.innerHTML);
     if (newText.length > 0) {
