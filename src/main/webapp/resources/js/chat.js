@@ -53,10 +53,10 @@ function delegateEvent(evtObj) {
 }
 
 function checkAuthentication() {
-    if (sessionStorage.getItem("user_id") != null) {
+    if (localStorage.getItem("user_id") != null) {
         // user
-        var user_id = sessionStorage.getItem("user_id");
-        var user_name = sessionStorage.getItem("user_name");
+        var user_id = localStorage.getItem("user_id");
+        var user_name = localStorage.getItem("user_name");
 
         var user_info_box = document.getElementById("user-info-box");
         user_info_box.innerHTML = "Добро пожаловать, " + user_name;
@@ -114,8 +114,7 @@ function onEnterButton(){
         var passhash = CryptoJS.MD5(document.getElementById('password').value);
 
         if (name.length > 0 && password.length > 0) {
-            var posting = $.post("/Chat/users", {"type": "authentication",
-                "name": name,
+            var posting = $.get("/users", {"name": name,
                 "password": passhash.toString()});
             posting.done(function (data) {
                 var user_id = data.user_id;
@@ -125,8 +124,8 @@ function onEnterButton(){
                     alert("Вы ввели корретные данные! Добро пожаловать в чат!");
                     document.getElementById('username').value = "";
                     document.getElementById('password').value = "";
-                    sessionStorage.setItem("user_id", user_id);
-                    sessionStorage.setItem("user_name", name);
+                    localStorage.setItem("user_id", user_id);
+                    localStorage.setItem("user_name", name);
 
                 }
                 checkAuthentication();
@@ -142,8 +141,8 @@ function onEnterButton(){
     } else {
         var response = confirm("Вы действительно хотите выйти из своей учетной записи?");
         if (response) {
-            sessionStorage.removeItem("user_id");
-            sessionStorage.removeItem("user_name");
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("user_name");
             checkAuthentication();
         }
     }
@@ -152,7 +151,7 @@ function onEnterButton(){
 function onRemoveButton(message_id) {
     var response = confirm("Вы действительно хотите удалить свое сообщение?");
     if (response) {
-        var posting = $.post("/Chat/messages", {"type": "remove_message", "message_id": message_id});
+        var posting = $.post("/messages", {"type": "remove_message", "message_id": message_id});
         posting.done( function( data ) {
             refreshMessageArea();
             // scrollToTheBottom();
@@ -172,7 +171,7 @@ function onEditButton(message_id) {
     if (newText.length > 0) {
         var response = confirm("Вы действительно хотите изменить свое сообщение?");
         if (response) {
-            var posting = $.post("/Chat/messages", {"type": "update_message", "message_id": message_id,
+            var posting = $.post("/messages", {"type": "update_message", "message_id": message_id,
                 "message": newText});
             posting.done( function( data ) {
                 refreshMessageArea();
@@ -189,16 +188,20 @@ function onEditButton(message_id) {
 }
 
 function onNameEditButton() {
-    var newName = prompt("Введите текст сообщения", sessionStorage.getItem("user_name"));
+    var newName = prompt("Введите текст сообщения", localStorage.getItem("user_name"));
     if (newName.length > 0) {
         var response = confirm("Вы действительно хотите изменить имя своего пользователя?");
         if (response) {
-            var posting = $.post("/Chat/users", {"type": "change_name",
-                "id": sessionStorage.getItem("user_id"),
-                "name": newName});
+
+            var posting = $.ajax({
+                type: "post",
+                url: "/users",
+                data: {"id": localStorage.getItem("user_id"), "name": newName}
+            });
+
             posting.done( function( data ) {
                 if (data.verdict == "ok") {
-                    sessionStorage.setItem("user_name", newName);
+                    localStorage.setItem("user_name", newName);
                 } else {
                     alert("Пользователь с таким именем уже существует! Выберите другое.");
                 }
@@ -218,7 +221,7 @@ function onNameEditButton() {
 function refreshMessageArea(){
     var posting = $.ajax({
         type: "get",
-        url: "/Chat/messages",
+        url: "/messages",
         data: {"type": "since", "timestamp": lastUpdate}
     });
 
@@ -232,7 +235,7 @@ function refreshMessageArea(){
                 lastUpdate = data[i].created_at;
             }
             if (data[i].event_type == "add_message") {
-                var user_id_session = sessionStorage.getItem("user_id");
+                var user_id_session = localStorage.getItem("user_id");
                 var user_id_message = message.user_id;
                 addMessage(message.id, author.bold() + "<" + processDate(date) + ">: "
                 + content.italics(), user_id_message == user_id_session);
@@ -294,8 +297,8 @@ function scrollToTheBottom() {
 function onAddButton(){
     var text = document.getElementById('message-text').value;
     if (text.length > 0) {
-        var user_id = sessionStorage.getItem("user_id");
-        var posting = $.post("/Chat/messages", {"type": "new_message", "user_id": user_id,
+        var user_id = localStorage.getItem("user_id");
+        var posting = $.post("/messages", {"type": "new_message", "user_id": user_id,
             "message": text});
         posting.done( function( data ) {
             refreshMessageArea();

@@ -1,12 +1,17 @@
 package com.chatterbox.models;
 
-import org.javalite.activejdbc.Model;
+import com.chatterbox.utils.Base;
 
 public class User extends Model {
 
-    static {
-        validatePresenceOf("name", "password", "email");
-//        validateEmailOf("email");
+    public User(Base base) {
+        super(base);
+        name = "users";
+    }
+
+    public User(Base base, int id) {
+        super(base, id);
+        name = "users";
     }
 
 }
