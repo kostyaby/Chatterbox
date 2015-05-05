@@ -58,8 +58,9 @@ public class MessageServlet extends HttpServlet {
             out.close();
         } catch(IOException | JSONException e) {
             e.printStackTrace();
+        } finally {
+            base.close();
         }
-        base.close();
     }
 
     @Override

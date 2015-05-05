@@ -57,7 +57,6 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
         Base base = new Base();
